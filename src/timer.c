@@ -9,10 +9,11 @@ u32int tick = 0;
 
 static void timer_callback(registers_t regs)
 {
+  // monitor_write("Timer callback\n");
+  //  monitor_write("a");
   tick++;
-  monitor_write("Tick: ");
-  monitor_write_hex(tick);
-  monitor_write("\n");
+  switch_task();
+  // monitor_write("b");
 }
 
 void init_timer(u32int frequency)

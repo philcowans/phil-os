@@ -16,18 +16,31 @@ u32int kmalloc_int(u32int sz, int align, u32int *phys)
 {
   if (kheap != 0)
     {
-      monitor_write("Allocating memory from heap\n");
+      //monitor_write("Allocating memory from heap\n");
       void *addr = alloc(sz, (u8int)align, kheap);
+      //monitor_write("Allocated: ");
+      //monitor_write_hex(addr);
+      //monitor_write("\n");
       if (phys != 0)
         {
 	  page_t *page = get_page((u32int)addr, 0, kernel_directory);
-	  *phys = page->frame*0x1000 + (u32int)addr&0xFFF;
+	  //monitor_write("Page address is ");
+	  //monitor_write_hex(page);
+	  //monitor_write("\n");
+	  //monitor_write_hex(page->frame);
+	  //monitor_write("\n");
+	  //monitor_write_hex(addr);
+	  //monitor_write("\n");
+	  *phys = page->frame*0x1000 + ((u32int)addr&0xFFF);
+	  //monitor_write("Phys: ");
+	  //monitor_write_hex(*phys);
+	  //monitor_write("\n");
         }
       return (u32int)addr;
     }
   else
     {
-      monitor_write("Allocating memory directly - heap not yet initialized\n");
+      //monitor_write("Allocating memory directly - heap not yet initialized\n");
       if (align == 1 && (placement_address & 0xFFFFF000) )
         {
 	  // Align the placement address;
@@ -67,11 +80,15 @@ u32int kmalloc(u32int sz) {
 
 static s32int find_smallest_hole(u32int size, u8int page_align, heap_t *heap)
 {
-  monitor_write("Looking for a hole\n");
+  //monitor_write("Looking for a hole\n");
+  //monitor_write("Heap index size is ");
+  //monitor_write_hex(heap->index.size);
+  //monitor_write("\n");
   // Find the smallest hole that will fit.
   u32int iterator = 0;
   while (iterator < heap->index.size)
     {
+      //monitor_write("Trying next heap index entry\n");
       header_t *header = (header_t *)lookup_ordered_array(iterator, &heap->index);
       // If the user has requested the memory be page-aligned
       if (page_align > 0)
@@ -197,9 +214,9 @@ void *alloc(u32int size, u8int page_align, heap_t *heap)
   // Find the smallest hole that will fit.
   s32int iterator = find_smallest_hole(new_size, page_align, heap);
 
-  monitor_write("Smallest hole is: ");
-  monitor_write_hex(iterator);
-  monitor_write("\n");
+  //monitor_write("Smallest hole is: ");
+  //monitor_write_hex(iterator);
+  //monitor_write("\n");
 
   if (iterator == -1) // If we didn't find a suitable hole
     {
