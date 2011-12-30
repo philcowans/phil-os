@@ -7,7 +7,7 @@ isr%1:
 	    jmp isr_common_stub
 %endmacro
 	
-	%macro ISR_ERRCODE 1
+%macro ISR_ERRCODE 1
 	  [GLOBAL isr%1]
 isr%1:
 	    cli
@@ -47,7 +47,8 @@ ISR_NOERRCODE 28
 ISR_NOERRCODE 29
 ISR_NOERRCODE 30
 ISR_NOERRCODE 31
-
+ISR_NOERRCODE 128
+	
 	;;  In isr.c
 	[EXTERN isr_handler]
 

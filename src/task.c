@@ -40,6 +40,7 @@ void initialise_tasking()
   current_task->esp = current_task->ebp = 0;
   current_task->eip = 0;
   current_task->page_directory = current_directory;
+  current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
   current_task->next = 0;
 
   // Reenable interrupts.
@@ -63,6 +64,7 @@ int fork()
   new_task->esp = new_task->ebp = 0;
   new_task->eip = 0;
   new_task->page_directory = directory;
+  current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
   new_task->next = 0;
 
   // Add it to the end of the ready queue.
@@ -165,6 +167,10 @@ void switch_task()
 
   current_directory = current_task->page_directory;
 
+  set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
+
+
+
   // monitor_write("Magic word is (end): ");
   // monitor_write_hex(*(u32int *)(0x1035b7));
   // monitor_write("\n");
@@ -257,4 +263,30 @@ void move_stack(void *new_stack_start, u32int size)
 int getpid() 
 {
   return current_task->id;
+}
+
+void switch_to_user_mode()
+{
+  set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
+
+  // Set up a stack structure for switching to user mode.
+  asm volatile("  \ 
+     cli; \ 
+     mov $0x23, %ax; \ 
+     mov %ax, %ds; \ 
+     mov %ax, %es; \ 
+     mov %ax, %fs; \ 
+     mov %ax, %gs; \ 
+                   \ 
+     mov %esp, %eax; \ 
+     pushl $0x23; \ 
+     pushl %eax; \ 
+     pushf; \ 
+     pushl $0x1B; \ 
+     push $1f; \ 
+     iret; \ 
+   1: \ 
+     ");
+
+  //  monitor_write("About to return from switch_to_user_mode\n");
 }

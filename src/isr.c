@@ -14,8 +14,12 @@ isr_t interrupt_handlers[256];
 void isr_handler(registers_t regs)
 {
 
-  //monitor_write("Handling interrupt (not IRQ) ");
-  //monitor_write_hex(regs.int_no);
+  //  monitor_write("Handling interrupt (not IRQ) ");
+  // monitor_write_hex(regs.int_no);
+  //monitor_write("\n");
+
+  //monitor_write("Handler is ");
+  //monitor_write_hex(interrupt_handlers[regs.int_no]);
   //monitor_write("\n");
 
 
@@ -55,6 +59,8 @@ void irq_handler(registers_t regs)
 
 void register_interrupt_handler(u8int n, isr_t handler)
 {
-  monitor_write("Registering interrupt handler\n");
+  monitor_write("Registering interrupt handler");
+  monitor_write_hex(n);
+  monitor_write("\n");
   interrupt_handlers[n] = handler;
 }

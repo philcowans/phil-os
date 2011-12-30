@@ -131,7 +131,7 @@ void initialise_paging()
     // Allocate a lil' bit extra so the kernel heap can be
     // initialised properly.
     i = 0;
-    while (i < placement_address+0x1000)
+    while (i < 0x400000) // placement_address+0x1000)
     {
         // Kernel code is readable but not writeable from userspace.
         alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
